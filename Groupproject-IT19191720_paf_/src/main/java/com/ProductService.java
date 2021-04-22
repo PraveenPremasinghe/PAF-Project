@@ -53,7 +53,7 @@ package com;
 			//Convert the input string to a JSON object
 			JsonObject itemObject = new JsonParser().parse(productid).getAsJsonObject();
 			
-			//Read the values from the JSON object
+			//Read the values from the JSON objects
 			String productid = itemObject.get("productid").getAsString();
 			String name = itemObject.get("name").getAsString();
 			String price = itemObject.get("price").getAsString();
