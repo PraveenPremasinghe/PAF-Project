@@ -1,0 +1,289 @@
+package com.paymentservice.model;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+public class Payment {
+	
+    private Connection connect()
+    {
+        Connection con = null;
+        try
+        {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+ 
+
+            //Provide the correct details: DBServer/DBName, user-name, password
+            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/payment-service", "root", "");
+        }
+        catch (Exception e)
+        {e.printStackTrace();}
+        return con;
+    } 
+
+ 
+
+    //Read Payment
+    public JsonObject getPayment() {
+        JsonObject result = null;
+        try
+        {
+            Connection con = connect();
+
+ 
+
+            if (con == null)
+            {
+                result = new JsonObject();
+                result.addProperty("ERROR", "Error while connecting to the database for inserting."); 
+            }
+
+ 
+
+
+            // create a prepared statement
+            String query = " select * from payment";
+
+ 
+
+
+            PreparedStatement preparedStmt = con.prepareStatement(query);
+            ResultSet rs = preparedStmt.executeQuery();
+            
+            JsonArray resultArray = new JsonArray();
+            while(rs.next()) {
+                JsonObject jsonRow = new JsonObject();
+                jsonRow.addProperty("payment_id", rs.getInt("payment_id") );
+                jsonRow.addProperty("paymenter_id", rs.getInt("paymenter_id") );
+                jsonRow.addProperty("payment_name", rs.getString("payment_name") );
+                jsonRow.addProperty("description", rs.getString("description") );
+                jsonRow.addProperty("category", rs.getString("category") );
+                jsonRow.addProperty("expected_budget", rs.getDouble("expected_budget") );
+                resultArray.add(jsonRow);
+                //System.out.println(jsonRow.toString());
+            }
+            result = new JsonObject();
+            result.add("payment", resultArray);
+            
+            con.close();
+        }
+        catch (Exception e)
+        {
+            result = new JsonObject();
+            result.addProperty("EXCEPTION", "Error occured while reading payment");
+            System.err.println(e.getMessage());
+        }
+        return result;
+    }
+
+ 
+
+    public JsonObject insertPayment( int paymenter_id , String name, String description,String category,double budget)
+    {
+        JsonObject result = null;
+        try
+        {
+            Connection con = connect();
+
+ 
+
+            if (con == null)
+            {
+                result = new JsonObject();
+                result.addProperty("ERROR", "Error while connecting to the database for inserting.");
+            }
+
+ 
+
+
+            // create a prepared statement
+            String query = " insert into payment"+
+                    "(`paymenter_id`,`payment_name`,`description`,`category`,`expected_budget`)"
+                    + " values (?, ?, ?, ?, ?)";
+
+ 
+
+
+            PreparedStatement preparedStmt = con.prepareStatement(query);
+
+ 
+
+
+            // binding values
+            preparedStmt.setInt(1, paymenter_id);
+            preparedStmt.setString(2, name);
+            preparedStmt.setString(3, description);
+            preparedStmt.setString(4, category);
+            preparedStmt.setDouble(5,budget);
+            // execute the statement
+
+ 
+
+            preparedStmt.execute();
+            con.close();
+            
+            result = new JsonObject();
+            result.addProperty("SUCCESSFUL", "Inserted successfully");
+        }
+        catch (Exception e)
+        {
+            result = new JsonObject();
+            result.addProperty("EXCEPTION","Error while inserting the item.");
+            System.err.println(e.getMessage());
+        }
+        return result;
+    } 
+    
+    //update payment
+    public JsonObject updatePayment( int payment_id, int paymenter_id , String name, String description,String category,double budget)
+    {
+        JsonObject result = null;
+        try
+        {
+            Connection con = connect();
+ 
+            if (con == null)
+            {
+                result = new JsonObject();
+                result.addProperty("ERROR", "Error while connecting to the database for inserting.");
+            }
+ 
+
+            // create a prepared statement
+            String query = "UPDATE payment SET paymenter_id=?,payment_name=?,description=?,category=?,expected_budget=? WHERE payment_id=?";
+ 
+
+            PreparedStatement preparedStmt = con.prepareStatement(query);
+ 
+
+            // binding values
+            preparedStmt.setInt(1, paymenter_id);
+            preparedStmt.setString(2, name);
+            preparedStmt.setString(3, description);
+            preparedStmt.setString(4, category);
+            preparedStmt.setDouble(5,budget);
+            preparedStmt.setInt(6, payment_id);
+
+            // execute the statement
+            preparedStmt.execute();
+            con.close();
+
+            result = new JsonObject();
+            result.addProperty("SUCCESSFUL", "Updated successfully");
+        }
+        catch (Exception e)
+        {
+            result = new JsonObject();
+            result.addProperty("EXCEPTION","Error while updating the item.");
+            System.err.println(e.getMessage());
+        }
+        return result;
+    } 
+
+    //delete payment
+    public JsonObject deletePayment( int payment_id )
+    {
+        JsonObject result = null;
+        try
+        {
+            Connection con = connect();
+ 
+            if (con == null)
+            {
+                result = new JsonObject();
+                result.addProperty("ERROR", "Error while connecting to the database for inserting.");
+            }
+ 
+
+            // create a prepared statement
+            String query = "delete from payment where payment_id=?";
+ 
+            PreparedStatement preparedStmt = con.prepareStatement(query);
+ 
+
+            // binding values
+            preparedStmt.setInt(1, payment_id);
+//            preparedStmt.setString(2, name);
+//            preparedStmt.setString(3, description);
+//            preparedStmt.setString(4, category);
+//            preparedStmt.setDouble(5,budget);
+//            preparedStmt.setInt(6, payment_id);
+
+            // execute the statement
+            preparedStmt.execute();
+            con.close();
+
+            result = new JsonObject();
+            result.addProperty("SUCCESSFUL", "Deleted successfully");
+        }
+        catch (Exception e)
+        {
+            result = new JsonObject();
+            result.addProperty("EXCEPTION","Error while deleting the item.");
+            System.err.println(e.getMessage());
+        }
+        return result;
+    } 
+
+
+    //get single record
+    public JsonObject getsinglePayment(int payment_id) {
+        JsonObject result = null;
+        try
+        {
+            Connection con = connect();
+ 
+            if (con == null)
+            {
+                result = new JsonObject();
+                result.addProperty("ERROR", "Error while connecting to the database for inserting."); 
+            }
+ 
+
+            // create a prepared statement
+            String query = " select * from payment where payment_id=?";
+ 
+
+            PreparedStatement preparedStmt = con.prepareStatement(query);
+
+            preparedStmt.setInt(1, payment_id);
+            ResultSet rs = preparedStmt.executeQuery();
+
+            JsonArray resultArray = new JsonArray();
+            while(rs.next()) {
+                JsonObject jsonRow = new JsonObject();
+                jsonRow.addProperty("payment_id", rs.getInt("payment_id") );
+                jsonRow.addProperty("paymenter_id", rs.getInt("paymenter_id") );
+                jsonRow.addProperty("payment_name", rs.getString("payment_name") );
+                jsonRow.addProperty("description", rs.getString("description") );
+                jsonRow.addProperty("category", rs.getString("category") );
+                jsonRow.addProperty("expected_budget", rs.getDouble("expected_budget") );
+                resultArray.add(jsonRow);
+                //System.out.println(jsonRow.toString());
+            }
+            result = new JsonObject();
+            result.add("payment", resultArray);
+
+            con.close();
+        }
+        catch (Exception e)
+        {
+            result = new JsonObject();
+            result.addProperty("EXCEPTION", "Error occured while reading payment");
+            System.err.println(e.getMessage());
+        }
+        return result;
+    }
+
+ 
+
+
+}
+
+

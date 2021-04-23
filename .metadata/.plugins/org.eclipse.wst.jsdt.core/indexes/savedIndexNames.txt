@@ -1,0 +1,8 @@
+INDEX VERSION 1.4+C:\Users\Msi 9RDS\Desktop\PAF sara\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+1997299741.index
+3470761861.index
+581828932.index
+1481792271.index
+4065038453.index
+1131265304.index
+628962644.index
