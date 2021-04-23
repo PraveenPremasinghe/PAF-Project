@@ -1,9 +1,7 @@
 package model;
 
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,12 +17,8 @@ public class Product {
 		{
 			Class.forName("com.mysql.jdbc.Driver");
 			
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Product-paf", "root", "");
+			con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/product-paf", "root", "");
 		
-			
-			//For testing
-			System.out.print("Successfully connected");
-		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
@@ -32,7 +26,7 @@ public class Product {
 		return con;
 	}
 	
-	public String InsertProduct(String productid, String name, String price, String description)
+	public String InsertProduct( String name, String price, String description)
 	{
 		
 		String output = "";
