@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.order.model.Customer;
 
-@Path("/customer")
+@Path("/customers")
 
 public class CustomerResource {
 	
@@ -24,7 +24,9 @@ public class CustomerResource {
 	    @GET
 	    @Path("/")
 	    @Produces(MediaType.APPLICATION_JSON)
-	    public String getCustomer(@QueryParam("userid") String userid) {
+	    public String getCustomer(@QueryParam("userid") String userid) 
+	    { 	
+	    	System.out.println("hello");
 	    	if(userid == null) {
 	    	
 	    	
